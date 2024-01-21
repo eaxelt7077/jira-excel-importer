@@ -1,0 +1,8 @@
+version: '3.1'
+services:
+  jira-excel-importer:
+    image: jira-excel-importer:1.0.0
+    ports:
+      - 8080:8080
+      - 9092:9092
+      - 2181:2181

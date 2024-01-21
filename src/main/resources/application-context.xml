@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <!-- Database / DAO -->
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="driverClassName" value="${spring.datasource.driver-class-name}" />	    
+		<property name="jdbcUrl" value="${spring.datasource.url}" />
+		<property name="username" value="${spring.datasource.username}" />
+		<property name="password" value="${spring.datasource.password}" />
+	    <property name="connectionTestQuery" value="${spring.datasource.hikari.connection-test-query}" />
+    </bean>
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+	    <constructor-arg ref="hikariConfig" />
+	</bean>
+    <bean id="sql2o" class="org.sql2o.Sql2o">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <!-- Kafka Producer -->
+    <bean id="producerFactory" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${spring.kafka.bootstrap-servers}" />
+                <entry key="key.serializer" value="org.apache.kafka.common.serialization.StringSerializer"/>
+                <entry key="value.serializer" value="org.apache.kafka.common.serialization.StringSerializer"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
+        <constructor-arg ref="producerFactory"/>
+    </bean>
+
+</beans>
